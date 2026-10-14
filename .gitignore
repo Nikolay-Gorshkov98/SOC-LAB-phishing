@@ -1,0 +1,11 @@
+# Секреты — НИКОГДА не коммитить
+*wazuh-passwords.txt
+*wazuh-install-files*
+*.key
+*.pem
+*secret*
+*password*
+
+# Системное
+.DS_Store
+Thumbs.db

@@ -1,0 +1,35 @@
+<!--
+  Собственные правила стенда (сценарий: фишинговое вложение).
+  Добавляются в /var/ossec/etc/rules/local_rules.xml на SOC_LAB.
+  Работают вместе со списком lists/malware-hashes и контролем
+  целостности файлов (FIM) для каталога /home/nikolay/Downloads.
+
+  На одно событие Wazuh создаёт один алерт, поэтому правило по хэшу
+  (уровень 13) стоит первым. Правило по имени срабатывает для
+  подозрительных файлов, хэша которых нет в списке.
+-->
+
+<group name="local,malware,phishing,">
+
+  <!-- Хэш нового или изменённого файла есть в списке известных вредоносных. -->
+  <rule id="100200" level="13">
+    <if_sid>554, 550</if_sid>
+    <list field="md5" lookup="match_key">etc/lists/malware-hashes</list>
+    <description>Known malware hash detected in a downloaded file</description>
+    <mitre>
+      <id>T1566.001</id>
+      <id>T1204.002</id>
+    </mitre>
+  </rule>
+
+  <!-- Файл с двойным расширением: документ, который на деле является программой или скриптом. -->
+  <rule id="100201" level="10">
+    <if_sid>554</if_sid>
+    <regex type="pcre2">(?i)\.(pdf|docx?|xlsx?|txt)\.(exe|scr|js|bat|sh)'</regex>
+    <description>Suspicious double extension file downloaded</description>
+    <mitre>
+      <id>T1566.001</id>
+    </mitre>
+  </rule>
+
+</group>
